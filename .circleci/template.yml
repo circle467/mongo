@@ -30,6 +30,7 @@ containers:
       - ENV_FILE_KEY_PATH: "/tmp/sql/fake_key.pem"
       - ENV_FILE_KEY_DATA: "__MIM_KEY__"
     entrypoint: *ENTRYPOINT
+
   - &pgsql_container
     image: postgres:__PGSQL_VERSION__
     environment:
@@ -49,6 +50,7 @@ containers:
       - ENV_FILE_KEY_PATH: "/tmp/sql/fake_key.pem"
       - ENV_FILE_KEY_DATA: "__MIM_KEY__"
     entrypoint: *ENTRYPOINT
+
   - &ldap_container
     image: osixia/openldap:__LDAP_VERSION__
     environment:
@@ -74,6 +76,7 @@ containers:
       - ENV_FILE_DHSERVER_PATH: "/container/service/slapd/assets/certs/dh_server.pem"
       - ENV_FILE_DHSERVER_DATA: "__MIM_DHSERVER__"
     entrypoint: *ENTRYPOINT
+
   - &mssql_container
     image: mcr.microsoft.com/mssql/server
     environment:
@@ -81,8 +84,7 @@ containers:
       - SA_PASSWORD: "mongooseim_secret+ESL123"
       - DB_NAME: mongooseim
       - SCHEMA_READY_PORT: 1434
-        # We are not running as root in this container,
-        # so we can only write into some directories (in this case, /tmp)
+      # We are not running as root in this container, so we can only write into some directories (in this case, /tmp)
       - SQL_FILE: "/tmp/mongoose.sql"
       - OLD_ENTRYPOINT: "{ /tmp/docker-setup-mssql.sh& } && /opt/mssql/bin/sqlservr"
       - ENV_FILE_SQL_PATH: "/tmp/mongoose.sql"
@@ -91,6 +93,7 @@ containers:
       - ENV_FILE_SH_DATA: "__MSSQL_SETUP__"
       - ENV_FILE_SH_MODE: 755
     entrypoint: *ENTRYPOINT
+
   - &redis_container
     image: cimg/redis:__REDIS_VERSION__
   - &rabbit_container
