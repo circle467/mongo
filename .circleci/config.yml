@@ -15,7 +15,7 @@ orbs:
 jobs:
   setup:
     machine: true
-    resource_class: class/custom  # Specify the self-hosted runner's resource class here
+    resource_class: organization/home  # Specify the self-hosted runner's resource class here
     steps:
       - checkout
       - maybe_build_certs
