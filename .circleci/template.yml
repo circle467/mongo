@@ -148,110 +148,59 @@ executors:
   otp_25:
     machine: true
     resource_class: organization/home
+
   otp_26:
     machine: true
     resource_class: organization/home
+
   otp_25_redis:
     machine: true
     resource_class: organization/home
+
   otp_26_redis:
     machine: true
     resource_class: organization/home
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP26
-          - *redis_container
 
   otp_26_redis_minio_rmq:
     machine: true
     resource_class: organization/home
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP26
-          - *redis_container
-          - *minio_container
-          - *rabbit_container
 
   otp_26_mysql_redis:
     machine: true
     resource_class: organization/home
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP26
-          - *redis_container
-          - *mysql_container
-          - *rabbit_container
 
   otp_25_pgsql_redis:
     machine: true
     resource_class: organization/home
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP25
-          - *redis_container
-          - *pgsql_container
 
   otp_26_pgsql_redis:
     machine: true
     resource_class: organization/home
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP26
-          - *redis_container
-          - *pgsql_container
 
   otp_25_ldap_redis:
     machine: true
     resource_class: organization/home
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP25
-          - *redis_container
-          - *ldap_container
 
   otp_26_ldap_redis:
     machine: true
     resource_class: organization/home
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP26
-          - *redis_container
-          - *ldap_container
 
   otp_26_mssql_redis:
     machine: true
     resource_class: organization/home
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP26
-          - *redis_container
-          - *mssql_container
 
   otp_26_elasticsearch_cassandra:
     machine: true
     resource_class: organization/home
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP26
-          - *redis_container
-          - *elasticsearch_container
-          - *cassandra_container
-          - *cassandra_proxy_container
 
   otp_26_arm64:
     machine: true
     resource_class: arm.medium
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP26
 
   otp_26_redis_arm64:
     machine: true
     resource_class: arm.medium
-    environment:
-      - DOCKER_CONTAINERS:
-          - image: *OTP26
-          - *redis_container    
+ 
 commands:
   fetch_build_packages:
     steps:
