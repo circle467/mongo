@@ -144,16 +144,16 @@ containers:
 executors:
   otp_25:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
   otp_26:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
   otp_25_redis:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
   otp_26_redis:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
     environment:
       - DOCKER_CONTAINERS:
           - image: *OTP26
@@ -161,7 +161,7 @@ executors:
 
   otp_26_redis_minio_rmq:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
     environment:
       - DOCKER_CONTAINERS:
           - image: *OTP26
@@ -171,7 +171,7 @@ executors:
 
   otp_26_mysql_redis:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
     environment:
       - DOCKER_CONTAINERS:
           - image: *OTP26
@@ -181,7 +181,7 @@ executors:
 
   otp_25_pgsql_redis:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
     environment:
       - DOCKER_CONTAINERS:
           - image: *OTP25
@@ -190,7 +190,7 @@ executors:
 
   otp_26_pgsql_redis:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
     environment:
       - DOCKER_CONTAINERS:
           - image: *OTP26
@@ -199,7 +199,7 @@ executors:
 
   otp_25_ldap_redis:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
     environment:
       - DOCKER_CONTAINERS:
           - image: *OTP25
@@ -208,7 +208,7 @@ executors:
 
   otp_26_ldap_redis:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
     environment:
       - DOCKER_CONTAINERS:
           - image: *OTP26
@@ -217,7 +217,7 @@ executors:
 
   otp_26_mssql_redis:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
     environment:
       - DOCKER_CONTAINERS:
           - image: *OTP26
@@ -226,7 +226,7 @@ executors:
 
   otp_26_elasticsearch_cassandra:
     machine: true
-    resource_class: class/custom
+    resource_class: organization/home
     environment:
       - DOCKER_CONTAINERS:
           - image: *OTP26
