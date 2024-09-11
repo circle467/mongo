@@ -9,7 +9,6 @@ references:
   - &DEPS_CACHE_KEY deps-cache-{{ checksum "rebar.lock" }}-{{ checksum "big_tests/rebar.lock" }}-{{ checksum "otp_version" }}-v5
   - &BUILD_CACHE_KEY build-cache-{{ .Branch }}-{{ .Revision }}-{{ checksum "otp_version" }}-v6
 
-# list of references to be used inside executors block
 containers:
   - &mysql_container
     image: mysql:__MYSQL_VERSION__
@@ -144,74 +143,112 @@ containers:
 
 executors:
   otp_25:
-    docker:
-      - image: *OTP25
-    resource_class: medium+
+    machine: true
+    resource_class: class/custom
   otp_26:
-    docker:
-      - image: *OTP26
-    resource_class: medium+
+    machine: true
+    resource_class: class/custom
   otp_25_redis:
-    docker:
-      - image: *OTP25
-      - *redis_container
+    machine: true
+    resource_class: class/custom
   otp_26_redis:
-    docker:
-      - image: *OTP26
-      - *redis_container
+    machine: true
+    resource_class: class/custom
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP26
+          - *redis_container
+
   otp_26_redis_minio_rmq:
-    docker:
-      - image: *OTP26
-      - *redis_container
-      - *minio_container
-      - *rabbit_container
+    machine: true
+    resource_class: class/custom
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP26
+          - *redis_container
+          - *minio_container
+          - *rabbit_container
+
   otp_26_mysql_redis:
-    docker:
-      - image: *OTP26
-      - *redis_container
-      - *mysql_container
-      - *rabbit_container
+    machine: true
+    resource_class: class/custom
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP26
+          - *redis_container
+          - *mysql_container
+          - *rabbit_container
+
   otp_25_pgsql_redis:
-    docker:
-      - image: *OTP25
-      - *redis_container
-      - *pgsql_container
+    machine: true
+    resource_class: class/custom
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP25
+          - *redis_container
+          - *pgsql_container
+
   otp_26_pgsql_redis:
-    docker:
-      - image: *OTP26
-      - *redis_container
-      - *pgsql_container
+    machine: true
+    resource_class: class/custom
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP26
+          - *redis_container
+          - *pgsql_container
+
   otp_25_ldap_redis:
-    docker:
-      - image: *OTP25
-      - *redis_container
-      - *ldap_container
+    machine: true
+    resource_class: class/custom
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP25
+          - *redis_container
+          - *ldap_container
+
   otp_26_ldap_redis:
-    docker:
-      - image: *OTP26
-      - *redis_container
-      - *ldap_container
+    machine: true
+    resource_class: class/custom
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP26
+          - *redis_container
+          - *ldap_container
+
   otp_26_mssql_redis:
-    docker:
-      - image: *OTP26
-      - *redis_container
-      - *mssql_container
+    machine: true
+    resource_class: class/custom
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP26
+          - *redis_container
+          - *mssql_container
+
   otp_26_elasticsearch_cassandra:
-    docker:
-      - image: *OTP26
-      - *redis_container
-      - *elasticsearch_container
-      - *cassandra_container
-      - *cassandra_proxy_container
+    machine: true
+    resource_class: class/custom
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP26
+          - *redis_container
+          - *elasticsearch_container
+          - *cassandra_container
+          - *cassandra_proxy_container
+
   otp_26_arm64:
-    docker:
-      - image: *OTP26
+    machine: true
     resource_class: arm.medium
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP26
+
   otp_26_redis_arm64:
-    docker:
-      - image: *OTP26
-      - *redis_container
+    machine: true
     resource_class: arm.medium
+    environment:
+      - DOCKER_CONTAINERS:
+          - image: *OTP26
+          - *redis_container    
 commands:
   fetch_build_packages:
     steps:
@@ -220,6 +257,9 @@ commands:
           command: |
             tools/circle-install-packages.sh \
             'libssl-dev unixodbc-dev unixodbc tdsodbc rsync zlib1g-dev'
+
+
+
   maybe_build_deps_and_cache:
     steps:
       - restore_cache:
@@ -240,6 +280,9 @@ commands:
           paths:
             - ~/project/_build/default/
             - ~/project/big_tests/_build/default/
+
+  
+
   cache_prod_build:
     parameters:
       arch:
@@ -254,6 +297,7 @@ commands:
       - save_cache:
           key: *BUILD_CACHE_KEY
           paths: ~/project/mongooseim-<<parameters.arch>>.tar.gz
+
   restore_prod_build:
     parameters:
       arch:
@@ -263,15 +307,23 @@ commands:
           echo $OTP_VERSION-<<parameters.arch>> > otp_version
       - restore_cache:
           key: *BUILD_CACHE_KEY
+
   persist_workspace:
-    steps:
-      - run: git gc
-      - persist_to_workspace:
-          root: ~/project/
-          paths: ["*"]
-  restore_workspace:
-    steps:
-      - attach_workspace: {at: ~/project}
+  steps:
+    - run:
+        name: Persist workspace
+        command: |
+          mkdir -p /var/lib/circleci-runner/workdir/workspace && cp -R ~/project/* /var/lib/circleci-runner/workdir/workspace/
+    - persist_to_workspace:
+        root: /var/lib/circleci-runner/workdir/workspace
+        paths:
+          - "*"
+
+restore_workspace:
+  steps:
+    - attach_workspace:
+        at: /var/lib/circleci-runner/workdir/workspace
+
   run_coverage_analysis:
     steps:
       - run:
@@ -281,17 +333,19 @@ commands:
             echo "Success!"
             ./rebar3 codecov analyze
             tools/circle-upload-codecov.sh
-  run_small_tests:
-    steps:
-      - restore_workspace
-      - run:
-          name: Wait for redis
-          command: |
-            tools/wait-for-it.sh -p 6379
-      - run:
-          name: Run Small Tests
-          command: |
-            tools/test.sh -p small_tests -s true -e true
+
+ run_small_tests:
+  steps:
+    - run:
+        name: Wait for Redis
+        command: |
+          /var/lib/circleci-runner/workdir/tools/wait-for-it.sh -p 6379
+    - run:
+        name: Run Small Tests
+        command: |
+          /var/lib/circleci-runner/workdir/tools/test.sh -p small_tests -s true -e true
+
+
   run_docker_smoke_test:
     steps:
       - checkout
@@ -990,4 +1044,4 @@ workflows:
           context: mongooseim-org
           requires:
             - docker_build_and_ship
-          filters: *all_tags
+          filters: *all_tags 
