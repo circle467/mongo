@@ -1,4 +1,4 @@
-version:  2.1
+version: 2.1
 
 references:
   - &OTP25 mongooseim/cimg-erlang:25.3.2.9
@@ -337,7 +337,7 @@ restore_workspace:
             ./rebar3 codecov analyze
             tools/circle-upload-codecov.sh
 
- run_small_tests:
+run_small_tests:
   steps:
     - run:
         name: Wait for Redis
